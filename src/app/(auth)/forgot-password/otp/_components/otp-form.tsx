@@ -13,8 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-
-import AuthImage from "../../../../../../public/assets/images/auth_logo.png"
+import { verifyOtp, resendOtp } from "@/lib/api/auth";
 
 export default function OtpForm() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
@@ -68,17 +67,10 @@ export default function OtpForm() {
     }
   };
 
-  // otp api integration
+  // otp verification via centralized API
   const { mutate, isPending } = useMutation({
     mutationKey: ["verify-otp"],
-    mutationFn: (values: { otp: string; email: string }) =>
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-code`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(values),
-      }).then((res) => res.json()),
+    mutationFn: (values: { otp: string; email: string }) => verifyOtp(values),
     onSuccess: (data) => {
       if (!data?.status) {
         toast.error(data?.message || "Something went wrong");
@@ -92,24 +84,19 @@ export default function OtpForm() {
     },
   });
 
-  // reset otp api integrattion
+  // resend OTP via centralized API
   const { mutate: resentOtp, isPending: resentOtpPending } = useMutation({
-    mutationKey: ["fotgot-password"],
-    mutationFn: (email: string) =>
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/forget-password`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      }).then((res) => res.json()),
-    onSuccess: (data, email) => {
+    mutationKey: ["resend-otp"],
+    mutationFn: (emailValue: string) => resendOtp(emailValue),
+    onSuccess: (data, emailValue) => {
       if (!data?.status) {
         toast.error(data?.message || "Something went wrong");
         return;
       } else {
-        toast.success(data?.message || "Email sent successfully!");
-        router.push(`/forgot-password/otp?email=${encodeURIComponent(email)}`);
+        toast.success(data?.message || "OTP resent successfully!");
+        router.push(
+          `/forgot-password/otp?email=${encodeURIComponent(emailValue)}`
+        );
       }
     },
   });
@@ -145,8 +132,6 @@ export default function OtpForm() {
       return;
     }
     mutate({ otp: otpValue, email: decodedEmail });
-
-    console.log("OTP Verified:", otpValue);
   };
 
   return (
@@ -154,15 +139,21 @@ export default function OtpForm() {
       <div className="w-full md:w-[479px] bg-white rounded-[16px] border-[2px] border-[#E7E7E7] shadow-[0px_0px_10px_0px_#0000001A] p-6">
         <div className="w-full flex items-center justify-center pb-7">
           <Link href="/">
-          <Image src={AuthImage} alt="auth logo" width={500} height={500} className="w-[290px] h-[80px] object-contain"/>
+            <Image
+              src="/images/auth_logo.png"
+              alt="auth logo"
+              width={500}
+              height={500}
+              className="w-[290px] h-[80px] object-contain"
+            />
           </Link>
         </div>
 
-         <h3 className="text-xl md:text-2xl lg:text-[32px] font-semibold text-[#00253E] text-left leading-[120%] ">
+        <h3 className="text-xl md:text-2xl lg:text-[32px] font-semibold text-[#00253E] text-left leading-[120%] ">
           Enter OTP
         </h3>
         <p className="text-base font-normal text-[#666666] leading-[150%] text-left pt-1">
-          Enter 6 digit OTP code has send on your email. 
+          Enter 6 digit OTP code has send on your email.
         </p>
         {/* OTP Input Fields */}
         <div className="flex gap-[10px] md:gap-5 lg:gap-6 w-full justify-center pt-5 md:pt-6">

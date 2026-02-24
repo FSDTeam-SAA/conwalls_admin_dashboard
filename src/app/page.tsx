@@ -1,6 +1,6 @@
 import React from "react";
 import HomeContainer from "./_components/home-container";
-import DashboardHeader from "./(participants)/_components/dashboard-header";
+import DashboardHeader from "./_components/dashboard-header";
 
 const HomePage = () => {
   return (

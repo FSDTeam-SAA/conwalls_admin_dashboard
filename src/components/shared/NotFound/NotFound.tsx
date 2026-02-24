@@ -1,7 +1,4 @@
-
-
-import { TextAnimate } from "@/components/ui/text-animate";
-import Image from "next/image";
+import { SearchX } from "lucide-react";
 import React from "react";
 
 interface Props {
@@ -10,25 +7,17 @@ interface Props {
 
 const NotFound = ({ message }: Props) => {
   return (
-    <div className="">
-      <div className="bg-primary/10 h-[360px] w-full flex flex-col items-center justify-center rounded-[20px]">
-        {/* Image */}
-        <Image
-          src="/assets/images/not_found_page.png"
-          alt="404 Not Found"
-          width={300}
-          height={300}
-          priority
-          unoptimized
-          className="mb-4 w-[250px] h-[150px]"
-        />
+    <div className="w-full">
+      <div className="bg-primary/5 h-[360px] w-full flex flex-col items-center justify-center rounded-[20px] border border-dashed border-primary/20">
+        {/* Icon */}
+        <div className="mb-6 p-6 rounded-full bg-primary/10">
+          <SearchX className="w-24 h-24 text-primary opacity-50" strokeWidth={1.5} />
+        </div>
 
         {/* Text Animation applied to message string only */}
-        <p className="text-lg font-bold text-gradient text-center w-1/2">
-          <TextAnimate animation="slideUp" by="word">
-            {message}
-          </TextAnimate>
-        </p>
+        <div className="text-lg font-bold text-[#00253E] text-center max-w-[400px]">
+          {message}
+        </div>
       </div>
     </div>
   );
