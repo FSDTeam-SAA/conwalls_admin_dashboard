@@ -14,14 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Eye, EyeOff, Globe, LockKeyhole, Mail } from 'lucide-react'
+import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
@@ -30,9 +23,6 @@ import Image from 'next/image'
 import { toast } from 'sonner'
 
 const formSchema = z.object({
-  language: z.string().min(1, {
-    message: 'Please select a language.',
-  }),
   email: z.string().email({
     message: 'Please enter a valid email address.',
   }),
@@ -48,7 +38,6 @@ const LoginForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      language: 'english',
       email: '',
       password: '',
     },
@@ -111,33 +100,6 @@ const LoginForm = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-2 pt-5 md:pt-6 lg:pt-8"
           >
-            <FormField
-              control={form.control}
-              name="language"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-lg md:text-xl lg:text-2xl font-medium text-[#001B31]">
-                    <Globe className="inline mr-1 -mt-1 w-6 h-6 text-[#00253E]" />{' '}
-                    Language
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full h-[48px] rounded-[8px] border border-[#6C6C6C] px-4 text-base">
-                        <SelectValue placeholder="Select a language" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="english">English</SelectItem>
-                      <SelectItem value="germany">German</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}

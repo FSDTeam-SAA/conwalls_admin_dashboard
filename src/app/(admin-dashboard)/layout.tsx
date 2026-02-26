@@ -4,14 +4,14 @@ import DashboardTopbar from './_components/DashboardTopbar'
 
 const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <div className="flex h-screen overflow-hidden bg-gray-50">
-            {/* Sidebar */}
-            <DashboardSidebar />
+        <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
+            {/* Top Header — full width */}
+            <DashboardTopbar />
 
-            {/* Main Content */}
-            <div className="flex flex-col flex-1 overflow-hidden">
-                {/* Top Header */}
-                <DashboardTopbar />
+            {/* Below: Sidebar + Main Content */}
+            <div className="flex flex-1 overflow-hidden">
+                {/* Sidebar */}
+                <DashboardSidebar />
 
                 {/* Page Content */}
                 <main className="flex-1 overflow-y-auto p-6">
@@ -23,3 +23,4 @@ const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
 }
 
 export default AdminDashboardLayout
+

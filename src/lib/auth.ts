@@ -1,12 +1,14 @@
 import { NextAuthOptions } from 'next-auth'
-import { JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  pages: {
+    signIn: '/login',
   },
   providers: [
     CredentialsProvider({
@@ -41,11 +43,10 @@ export const authOptions: NextAuthOptions = {
 
           const response = await res.json()
 
-          console.log('response login', response)
-
           if (!res.ok || !response?.status) {
             throw new Error(response?.message || 'Login failed')
           }
+
           const { user, accessToken } = response.data
 
           return {
@@ -55,6 +56,7 @@ export const authOptions: NextAuthOptions = {
             language: user.language,
             profileImage: user.profileImage || '',
             accessToken,
+            refreshToken: user.refreshToken || '',
           }
         } catch (error) {
           console.error('Authentication error:', error)
@@ -69,28 +71,28 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.email = user.email
+        token.email = user.email ?? ''
         token.role = user.role
         token.language = user.language
         token.profileImage = user.profileImage
         token.accessToken = user.accessToken
+        token.refreshToken = user.refreshToken
       }
       return token
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async session({ session, token }: { session: any; token: JWT }) {
+    async session({ session, token }) {
       session.user = {
         id: token.id,
-        email: token.email,
+        email: token.email ?? '',
         role: token.role,
         language: token.language,
         profileImage: token.profileImage,
         accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
       }
       return session
     },

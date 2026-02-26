@@ -1,7 +1,11 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -29,6 +33,7 @@ interface Trainer {
   email: string
   phone?: string
   role: string
+  status?: string
   isVerified: boolean
   createdAt: string
 }
@@ -53,7 +58,7 @@ const LIMIT = 8
 
 const TrainersPage = () => {
   const { data: session } = useSession()
-  const accessToken = (session?.user as { accessToken?: string })?.accessToken
+  const accessToken = session?.user?.accessToken
   const queryClient = useQueryClient()
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -66,7 +71,7 @@ const TrainersPage = () => {
     queryKey: ['trainers', currentPage],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/users?page=${currentPage}&limit=${LIMIT}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/trainer?page=${currentPage}&limit=${LIMIT}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -77,6 +82,7 @@ const TrainersPage = () => {
       return res.json()
     },
     enabled: !!accessToken,
+    placeholderData: keepPreviousData,
   })
 
   const trainers = data?.data?.items || []
@@ -84,6 +90,7 @@ const TrainersPage = () => {
   const totalPages = data?.data?.pagination?.totalPages || 1
 
   const handleRefresh = () => {
+    setCurrentPage(1)
     queryClient.invalidateQueries({ queryKey: ['trainers'] })
   }
 
@@ -94,7 +101,7 @@ const TrainersPage = () => {
         <h1
           style={{
             fontFamily: 'var(--font-nunito), sans-serif',
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '24px',
             lineHeight: '120%',
             color: '#00253E',
@@ -272,7 +279,7 @@ const TrainersPage = () => {
                   </TableCell>
                   <TableCell className="py-4 text-center ">
                     <span className="inline-flex items-center justify-center px-3 py-1 rounded-full border-2 border-[#00AC0033] text-xs font-medium bg-[#00AC0033] text-[#00253E] min-w-[80px]">
-                      {trainer.isVerified ? 'Active' : 'InActive'}
+                      {trainer.status}
                     </span>
                   </TableCell>
                   <TableCell className="py-4 pr-6">
