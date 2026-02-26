@@ -1,107 +1,100 @@
-import { NextAuthOptions } from "next-auth";
-import { JWT } from "next-auth/jwt";
-import CredentialsProvider from "next-auth/providers/credentials";
+import { NextAuthOptions } from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  pages: {
+    signIn: '/login',
   },
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text", placeholder: "email" },
+        email: { label: 'Email', type: 'text', placeholder: 'email' },
         password: {
-          label: "Password",
-          type: "password",
-          placeholder: "password",
+          label: 'Password',
+          type: 'password',
+          placeholder: 'password',
         },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Please enter your email and password");
+          throw new Error('Please enter your email and password')
         }
 
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
             {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
               body: JSON.stringify({
                 email: credentials.email,
                 password: credentials.password,
               }),
-            }
-          );
+            },
+          )
 
-          const response = await res.json();
-
-          console.log("response login", response);
+          const response = await res.json()
 
           if (!res.ok || !response?.status) {
-            throw new Error(response?.message || "Login failed");
+            throw new Error(response?.message || 'Login failed')
           }
-          // if (response.data.user.role !== "admin") {
-          //   throw new Error("ADMIN_ONLY");
-          // }
-          const { user, accessToken } = response.data;
+
+          const { user, accessToken } = response.data
 
           return {
             id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
             email: user.email,
             role: user.role,
             language: user.language,
-            profileImage: user.profileImage,
+            profileImage: user.profileImage || '',
             accessToken,
-          };
+            refreshToken: user.refreshToken || '',
+          }
         } catch (error) {
-          console.error("Authentication error:", error);
+          console.error('Authentication error:', error)
           const errorMessage =
             error instanceof Error
               ? error.message
-              : "Authentication failed. Please try again.";
-          throw new Error(errorMessage);
+              : 'Authentication failed. Please try again.'
+          throw new Error(errorMessage)
         }
       },
     }),
   ],
 
   callbacks: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.firstName = user.firstName;
-        token.lastName = user.lastName;
-        token.email = user.email;
-        token.role = user.role;
-        token.language = user.language;
-        token.profileImage = user.profileImage;
-        token.accessToken = user.accessToken;
+        token.id = user.id
+        token.email = user.email ?? ''
+        token.role = user.role
+        token.language = user.language
+        token.profileImage = user.profileImage
+        token.accessToken = user.accessToken
+        token.refreshToken = user.refreshToken
       }
-      return token;
+      return token
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async session({ session, token }: { session: any; token: JWT }) {
+    async session({ session, token }) {
       session.user = {
         id: token.id,
-        firstName: token.firstName,
-        lastName: token.lastName,
-        email: token.email,
+        email: token.email ?? '',
         role: token.role,
         language: token.language,
         profileImage: token.profileImage,
         accessToken: token.accessToken,
-      };
-      return session;
+        refreshToken: token.refreshToken,
+      }
+      return session
     },
   },
-};
+}

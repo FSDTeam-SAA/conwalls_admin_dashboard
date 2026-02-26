@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import home_bg from "../../../public/assets/images/home_bg.png";
+// home_bg is loaded from public/images/ via Next.js public path
 import Image from "next/image";
 
 const HomeContainer = () => {
@@ -18,7 +18,7 @@ const HomeContainer = () => {
   return (
     <div className="h-screen w-full -mt-[108px] relative">
       <Image
-        src={home_bg}
+        src="/images/home_bg.png"
         alt="auth logo"
         fill
         className="object-cover"

@@ -1,11 +1,11 @@
 import React from 'react'
-import DashboardHeader from '../(participants)/_components/dashboard-header'
+import DashboardHeader from '../_components/dashboard-header'
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-        <DashboardHeader />
-        {children}
+      <DashboardHeader />
+      {children}
     </div>
   )
 }

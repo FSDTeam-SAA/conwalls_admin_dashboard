@@ -1,80 +1,28 @@
-import { getToken } from "next-auth/jwt";
-import { NextResponse, NextRequest } from "next/server";
+import { withAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
 
-const PUBLIC_ROUTES = [
-  "/login",
-  "/forgot-password",
-  "/forgot-password/otp",
-  "/forgot-password/reset-password",
-  "/favicon.ico",
-  "/api",
-  "/_next/static",
-  "/_next/image",
-];
+export default withAuth(
+    function middleware(req) {
+        const token = req.nextauth.token
+        const pathname = req.nextUrl.pathname
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+        // If accessing dashboard routes, ensure user has ADMIN role
+        if (pathname.startsWith('/dashboard') && token?.role !== 'ADMIN') {
+            return NextResponse.redirect(new URL('/login', req.url))
+        }
 
-  if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
-
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
-  // console.log("token +++++++++++++++++=", token);
-  // console.log( "role------------------", token?.role);
-
-  if (!token || (token?.role !== "PARTICIPANT" && token?.role !== "TRAINER")) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  return NextResponse.next();
-}
+        return NextResponse.next()
+    },
+    {
+        callbacks: {
+            authorized: ({ token }) => !!token,
+        },
+        pages: {
+            signIn: '/login',
+        },
+    },
+)
 
 export const config = {
-  matcher: ["/((?!favicon.ico|api|_next/static|_next/image).*)"],
-};
-
-
-
-
-
-
-// import { getToken } from "next-auth/jwt";
-// import { NextResponse } from "next/server";
-// import type { NextRequest } from "next/server";
-
-// export async function middleware(req: NextRequest) {
-//   const { pathname } = req.nextUrl;
-//   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
-//   // Public routes (everyone can access)
-//   const publicRoutes = [
-//     "/login",
-//     "/forgot-password",
-//     "/forgot-password/otp",
-//     "/forgot-password/otp/reset-password",
-//   ];
-
-//   // If the path is public → allow
-//   if (publicRoutes.includes(pathname)) {
-//     return NextResponse.next();
-//   }
-
-//   if (!token) {
-//     // Redirect if no token
-//     return NextResponse.redirect(new URL("/login", req.url));
-//   }
-
-//   return NextResponse.next();
-// }
-
-// // Middleware matcher
-// export const config = {
-//   matcher: [
-//       "/((?!api/auth|_next/static|_next/image|favicon.ico|assets|images|uploads|fonts).*)",
-//   ],
-// };
+    matcher: ['/dashboard/:path*'],
+}
