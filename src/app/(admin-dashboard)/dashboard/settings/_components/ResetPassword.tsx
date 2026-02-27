@@ -68,8 +68,8 @@ const ResetPassword = () => {
 
             toast.success('Password changed successfully!')
             form.reset()
-        } catch (err: any) {
-            toast.error(err.message || 'Failed to reset password')
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : 'Failed to reset password')
         } finally {
             setIsSubmitting(false)
         }

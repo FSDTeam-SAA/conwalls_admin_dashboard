@@ -118,9 +118,10 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
             {/* Middle Side */}
             <div className="flex items-center justify-center py-4 ">
               <div className="bg-[#BADA55] w-full min-h-[64px] py-4 flex items-center justify-center rounded-[4px] text-center px-4 shadow-sm border border-[#BADA55]">
-                <span className="text-[24px] font-semibold text-[#00253E] leading-[110%]">
+                <span className="text-[18px] font-semibold text-[#00253E] leading-[110%]">
                   {field.name}
                 </span>
+
               </div>
             </div>
 
