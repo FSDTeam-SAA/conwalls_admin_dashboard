@@ -3,7 +3,8 @@
 import React, { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { Plus, Pencil, Trash2, ChevronRight, Loader2, Star, Circle } from 'lucide-react'
+import { Plus, Pencil, Trash2, ChevronRight, Loader2, Circle } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -49,7 +50,11 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
 
         try {
             setIsSubmitting(true)
-            const payload: any = {}
+            const payload: {
+                roleTypes?: TypeItem[]
+                categoryTypes?: TypeItem[]
+                measureTypes?: MeasureType[]
+            } = {}
 
             if (activeTab === 'role') {
                 payload.roleTypes = [...(settings.roleTypes || []), { name: newValue.trim() }]
@@ -58,6 +63,7 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
             } else {
                 payload.measureTypes = [...(settings.measureTypes || []), { name: newValue.trim(), values: { de: '', en: '' } }]
             }
+
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/system-setting/${settings._id}`, {
                 method: 'PUT',
@@ -73,8 +79,8 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
             toast.success('Added successfully!')
             setNewValue('')
             onUpdate()
-        } catch (err: any) {
-            toast.error(err.message || 'Failed to add')
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : 'Failed to add')
         } finally {
             setIsSubmitting(false)
         }
@@ -85,14 +91,18 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
 
         try {
             setIsSubmitting(true)
-            const payload: any = {}
+            const payload: {
+                roleTypes?: TypeItem[]
+                categoryTypes?: TypeItem[]
+                measureTypes?: MeasureType[]
+            } = {}
 
             const newItems = [...items]
             newItems[editIndex] = { ...newItems[editIndex], name: editValue.trim() }
 
-            if (activeTab === 'role') payload.roleTypes = newItems
-            else if (activeTab === 'category') payload.categoryTypes = newItems
-            else payload.measureTypes = newItems
+            if (activeTab === 'role') payload.roleTypes = newItems as TypeItem[]
+            else if (activeTab === 'category') payload.categoryTypes = newItems as TypeItem[]
+            else payload.measureTypes = newItems as MeasureType[]
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/system-setting/${settings._id}`, {
                 method: 'PUT',
@@ -108,8 +118,8 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
             toast.success('Updated successfully!')
             setIsEditModalOpen(false)
             onUpdate()
-        } catch (err: any) {
-            toast.error(err.message || 'Failed to update')
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : 'Failed to update')
         } finally {
             setIsSubmitting(false)
         }
@@ -125,7 +135,11 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
 
         try {
             setIsSubmitting(true)
-            const payload: any = {}
+            const payload: {
+                roleTypes?: TypeItem[]
+                categoryTypes?: TypeItem[]
+                measureTypes?: MeasureType[]
+            } = {}
             const index = deleteIndex
 
             if (activeTab === 'role') {
@@ -150,13 +164,14 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
             toast.success('Deleted successfully!')
             setIsDeleteModalOpen(false)
             onUpdate()
-        } catch (err: any) {
-            toast.error(err.message || 'Failed to delete')
+        } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : 'Failed to delete')
         } finally {
             setIsSubmitting(false)
             setDeleteIndex(null)
         }
     }
+
 
     const openEditModal = (index: number, name: string) => {
         setEditIndex(index)

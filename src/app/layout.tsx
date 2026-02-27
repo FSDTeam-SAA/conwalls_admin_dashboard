@@ -3,15 +3,16 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import AuthProvider from '@/components/providers/AuthProvider'
 import AppProvider from '@/components/providers/AppProvider'
+import LangConfig from '@/components/shared/lang-config'
 
 import { Nunito_Sans } from 'next/font/google'
-// import DashboardHeader from "./(participants)/_components/dashboard-header";
 
 const nunito = Nunito_Sans({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-nunito',
 })
+
 
 export const metadata: Metadata = {
   title: 'Conwalls Admin Dashboard',
@@ -28,9 +29,11 @@ export default function RootLayout({
       <body className={`font-nunito antialiased`}>
         <AuthProvider>
           <AppProvider>
+            <LangConfig />
             {/* <DashboardHeader/> */}
 
             {children}
+
             <Toaster />
           </AppProvider>
         </AuthProvider>
