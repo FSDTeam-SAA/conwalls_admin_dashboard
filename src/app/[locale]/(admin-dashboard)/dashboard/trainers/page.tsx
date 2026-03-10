@@ -7,8 +7,9 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/routing'
 import { Plus, Pencil, Trash2, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -57,6 +58,7 @@ interface ApiResponse {
 const LIMIT = 8
 
 const TrainersPage = () => {
+  const t = useTranslations('common')
   const { data: session } = useSession()
   const accessToken = session?.user?.accessToken
   const queryClient = useQueryClient()
@@ -107,7 +109,7 @@ const TrainersPage = () => {
             color: '#00253E',
           }}
         >
-          Trainer Management
+          {t('trainerManagement')}
         </h1>
       </div>
 
@@ -123,7 +125,7 @@ const TrainersPage = () => {
             lineHeight: '120%',
           }}
         >
-          Dashboard
+          {t('dashboard')}
         </Link>
         <ChevronRight className="w-4 h-4 text-[#00253E]" />
         <span
@@ -135,7 +137,7 @@ const TrainersPage = () => {
             lineHeight: '120%',
           }}
         >
-          Trainer Management
+          {t('trainerManagement')}
         </span>
       </nav>
 
@@ -146,7 +148,7 @@ const TrainersPage = () => {
           className="flex items-center gap-2 h-[44px] px-5 bg-primary text-[#00253E] font-semibold rounded-[8px] hover:bg-primary/90"
         >
           <Plus className="w-4 h-4" />
-          Add New Trainer
+          {t('addNewTrainer')}
         </Button>
       </div>
 
@@ -163,7 +165,7 @@ const TrainersPage = () => {
                   lineHeight: '120%',
                 }}
               >
-                Trainer name
+                {t('trainerName')}
               </TableHead>
               <TableHead
                 className="text-[#00253E] font-normal py-4 text-center"
@@ -173,7 +175,7 @@ const TrainersPage = () => {
                   lineHeight: '120%',
                 }}
               >
-                Email
+                {t('email')}
               </TableHead>
               <TableHead
                 className="text-[#00253E] font-normal py-4 text-center"
@@ -183,7 +185,7 @@ const TrainersPage = () => {
                   lineHeight: '120%',
                 }}
               >
-                Role
+                {t('role')}
               </TableHead>
               <TableHead
                 className="text-[#00253E] font-normal py-4 text-center"
@@ -193,7 +195,7 @@ const TrainersPage = () => {
                   lineHeight: '120%',
                 }}
               >
-                Status
+                {t('status')}
               </TableHead>
               <TableHead
                 className="text-[#00253E] font-normal py-4 pr-6 text-center"
@@ -203,7 +205,7 @@ const TrainersPage = () => {
                   lineHeight: '120%',
                 }}
               >
-                Action
+                {t('action')}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -235,13 +237,13 @@ const TrainersPage = () => {
             ) : isError ? (
               <TableRow>
                 <TableCell colSpan={5} className="py-6">
-                  <ErrorContainer message="Failed to load trainers. Please try again." />
+                  <ErrorContainer message={t('failedLoadTrainers')} />
                 </TableCell>
               </TableRow>
             ) : trainers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="py-6">
-                  <NotFound message="No trainers found. Add your first trainer!" />
+                  <NotFound message={t('noTrainersFound')} />
                 </TableCell>
               </TableRow>
             ) : (
@@ -288,7 +290,7 @@ const TrainersPage = () => {
                       <button
                         onClick={() => setEditTrainer(trainer)}
                         className="w-8 h-8 flex items-center justify-center rounded bg-[#BADA55] text-[#00253E] hover:bg-[#BADA55]/90 transition-colors"
-                        title="Edit trainer"
+                        title={t('editTrainer')}
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
@@ -299,7 +301,7 @@ const TrainersPage = () => {
                           setDeleteTrainerName(trainer.name)
                         }}
                         className="w-8 h-8 flex items-center justify-center rounded bg-[#FF333366] text-[#00253E] hover:bg-[#FF3333]/40 transition-colors"
-                        title="Delete trainer"
+                        title={t('deleteTrainer')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -316,8 +318,8 @@ const TrainersPage = () => {
       {!isLoading && !isError && trainers.length > 0 && (
         <div className="flex items-center justify-between mt-4 px-1">
           <p className="text-sm text-gray-500">
-            Showing {(currentPage - 1) * LIMIT + 1} to{' '}
-            {Math.min(currentPage * LIMIT, total)} of {total} results
+            {t('showing')} {(currentPage - 1) * LIMIT + 1} {t('to')}{' '}
+            {Math.min(currentPage * LIMIT, total)} {t('of')} {total} {t('results')}
           </p>
           <CustomPagination
             currentPage={currentPage}

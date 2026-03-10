@@ -1,28 +1,29 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Users, Settings, LogOut } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import LogoutModal from '@/components/shared/LogoutModal/LogoutModal'
-
-const navItems = [
-  {
-    label: 'Trainer Management',
-    href: '/dashboard/trainers',
-    icon: Users,
-  },
-  {
-    label: 'System Settings',
-    href: '/dashboard/settings',
-    icon: Settings,
-  },
-]
+import { Link, usePathname } from '@/i18n/routing'
 
 const DashboardSidebar = () => {
+  const t = useTranslations('common')
   const pathname = usePathname()
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+
+  const navItems = [
+    {
+      label: t('trainerManagement'),
+      href: '/dashboard/trainers',
+      icon: Users,
+    },
+    {
+      label: t('systemSettings'),
+      href: '/dashboard/settings',
+      icon: Settings,
+    },
+  ]
 
   return (
     <aside className="w-[312px] h-full bg-primary flex flex-col">
@@ -62,7 +63,7 @@ const DashboardSidebar = () => {
           className="flex items-center gap-3 px-4 py-3 rounded-[8px] text-[17px] font-semibold text-[#FF4D4D] hover:bg-black/5 transition-all duration-200 w-full"
         >
           <LogOut className="w-6 h-6 flex-shrink-0" />
-          Log out
+          {t('logout')}
         </button>
       </div>
 

@@ -10,12 +10,15 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { SystemSettings, MeasureType } from '@/types/settings'
 
+import { useTranslations } from 'next-intl'
+
 interface AiPromptControlProps {
   settings: SystemSettings | null
   onUpdate: () => void
 }
 
 const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
+  const t = useTranslations('common')
   const { data: session } = useSession()
   const accessToken = session?.user?.accessToken
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -75,8 +78,7 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
   if (!fields || fields.length === 0) {
     return (
       <div className="py-10 text-center text-gray-400">
-        No measure types found. Please add them in the Dropdown Control section
-        first.
+        {t('noMeasureTypesFound')}
       </div>
     )
   }
@@ -86,13 +88,13 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
       <div className="bg-[#00253E] text-white overflow-hidden rounded-t-[8px]">
         <div className="grid grid-cols-[1fr_200px_1fr] border-b border-gray-700">
           <div className="py-3 px-4 text-center font-bold text-sm uppercase text-[#D0DDE8]">
-            German
+            {t('german')}
           </div>
           <div className="py-3 px-4 text-center font-bold text-sm uppercase">
-            Measures & Prompts
+            {t('measuresPromptsHeader')}
           </div>
           <div className="py-3 px-4 text-center font-bold text-sm uppercase text-[#ECF2CB]">
-            English
+            {t('english')}
           </div>
         </div>
       </div>
@@ -106,11 +108,11 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
             {/* German Side */}
             <div className="bg-[#D0DDE8] p-4 flex flex-col justify-center">
               <span className="text-[12px] text-[#00253E] uppercase mb-2 font-semibold ml-1 opacity-60">
-                Prompt
+                {t('promptLabel')}
               </span>
               <Textarea
                 {...register(`measureTypes.${index}.values.de`)}
-                placeholder="German prompt..."
+                placeholder={t('germanPromptPlaceholder')}
                 className="flex-1 bg-white border border-[#E2E8F0] focus-visible:ring-0 resize-none text-[20px] font-normal leading-[110%] text-[#00253E] rounded-[4px] p-4"
               />
             </div>
@@ -128,11 +130,11 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
             {/* English Side */}
             <div className="bg-[#ECF2CB] p-4 flex flex-col justify-center ">
               <span className="text-[12px] text-[#00253E] uppercase mb-2 font-semibold ml-1 opacity-60">
-                Prompt
+                {t('promptLabel')}
               </span>
               <Textarea
                 {...register(`measureTypes.${index}.values.en`)}
-                placeholder="English prompt..."
+                placeholder={t('englishPromptPlaceholder')}
                 className="flex-1 bg-white border border-[#E2E8F0] focus-visible:ring-0 resize-none text-[20px] font-normal leading-[110%] text-[#00253E] rounded-[4px] p-4"
               />
             </div>
@@ -149,10 +151,10 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
+              {t('saving')}
             </>
           ) : (
-            'Save Changes'
+            t('saveChanges')
           )}
         </Button>
       </div>

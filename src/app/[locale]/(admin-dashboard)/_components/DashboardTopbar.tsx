@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import LanguageSwitcher from '@/components/ui/language-switcher'
 
-
 const DashboardTopbar = () => {
   return (
     <header className="relative h-[80px] bg-[#00253E] flex items-center justify-between px-6 py-4 md:px-8 w-full flex-shrink-0 z-20">
@@ -32,6 +31,5 @@ const DashboardTopbar = () => {
     </header>
   )
 }
-
 
 export default DashboardTopbar
