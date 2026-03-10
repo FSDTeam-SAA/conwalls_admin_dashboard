@@ -18,18 +18,22 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 
-const passwordSchema = z.object({
-    oldPassword: z.string().min(1, 'Current password is required'),
-    newPassword: z.string().min(6, 'New password must be at least 6 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your new password'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-})
-
-type PasswordFormValues = z.infer<typeof passwordSchema>
+import { useTranslations } from 'next-intl'
 
 const ResetPassword = () => {
+    const t = useTranslations('common')
+
+    const passwordSchema = z.object({
+        oldPassword: z.string().min(1, t('currentPasswordRequired')),
+        newPassword: z.string().min(6, t('newPasswordMin')),
+        confirmPassword: z.string().min(1, t('confirmPasswordMin')),
+    }).refine((data) => data.newPassword === data.confirmPassword, {
+        message: t('passwordsMatch'),
+        path: ['confirmPassword'],
+    })
+
+    type PasswordFormValues = z.infer<typeof passwordSchema>
+
     const { data: session } = useSession()
     const accessToken = session?.user?.accessToken
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -63,13 +67,13 @@ const ResetPassword = () => {
 
             if (!res.ok) {
                 const err = await res.json()
-                throw new Error(err.message || 'Failed to change password')
+                throw new Error(err.message || t('failedChangePassword'))
             }
 
-            toast.success('Password changed successfully!')
+            toast.success(t('passwordChangedSuccess'))
             form.reset()
         } catch (err: unknown) {
-            toast.error(err instanceof Error ? err.message : 'Failed to reset password')
+            toast.error(err instanceof Error ? err.message : t('failedChangePassword'))
         } finally {
             setIsSubmitting(false)
         }
@@ -85,7 +89,7 @@ const ResetPassword = () => {
                         name="oldPassword"
                         render={({ field }) => (
                             <FormItem className="space-y-3">
-                                <FormLabel className="text-[24px] font-semibold text-[#00253E] leading-[110%]">Current Password</FormLabel>
+                                <FormLabel className="text-[24px] font-semibold text-[#00253E] leading-[110%]">{t('currentPassword')}</FormLabel>
                                 <FormControl>
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -93,7 +97,7 @@ const ResetPassword = () => {
                                         </div>
                                         <Input
                                             type={showOld ? 'text' : 'password'}
-                                            placeholder="Enter the Password"
+                                            placeholder={t('enterPasswordPlaceholder')}
                                             className="h-14 border-[#E2E8F0] rounded-[4px] pl-10 pr-10 bg-white focus-visible:ring-1 focus-visible:ring-primary shadow-sm text-[24px] font-normal leading-[110%] text-[#00253E]"
                                             {...field}
                                         />
@@ -117,7 +121,7 @@ const ResetPassword = () => {
                         name="newPassword"
                         render={({ field }) => (
                             <FormItem className="space-y-3">
-                                <FormLabel className="text-[24px] font-semibold text-[#00253E] leading-[110%]">New Password</FormLabel>
+                                <FormLabel className="text-[24px] font-semibold text-[#00253E] leading-[110%]">{t('newPasswordLabel')}</FormLabel>
                                 <FormControl>
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -125,7 +129,7 @@ const ResetPassword = () => {
                                         </div>
                                         <Input
                                             type={showNew ? 'text' : 'password'}
-                                            placeholder="Enter the Password"
+                                            placeholder={t('enterPasswordPlaceholder')}
                                             className="h-14 border-[#E2E8F0] rounded-[4px] pl-10 pr-10 bg-white focus-visible:ring-1 focus-visible:ring-primary shadow-sm text-[24px] font-normal leading-[110%] text-[#00253E]"
                                             {...field}
                                         />
@@ -149,7 +153,7 @@ const ResetPassword = () => {
                         name="confirmPassword"
                         render={({ field }) => (
                             <FormItem className="space-y-3">
-                                <FormLabel className="text-[24px] font-semibold text-[#00253E] leading-[110%]">Confirm Password</FormLabel>
+                                <FormLabel className="text-[24px] font-semibold text-[#00253E] leading-[110%]">{t('confirmPasswordLabel')}</FormLabel>
                                 <FormControl>
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -157,7 +161,7 @@ const ResetPassword = () => {
                                         </div>
                                         <Input
                                             type={showConfirm ? 'text' : 'password'}
-                                            placeholder="Enter the Confirm a Password"
+                                            placeholder={t('enterConfirmPasswordPlaceholder')}
                                             className="h-14 border-[#E2E8F0] rounded-[4px] pl-10 pr-10 bg-white focus-visible:ring-1 focus-visible:ring-primary shadow-sm text-[24px] font-normal leading-[110%] text-[#00253E]"
                                             {...field}
                                         />
@@ -184,10 +188,10 @@ const ResetPassword = () => {
                             {isSubmitting ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Updating...
+                                    {t('updating')}
                                 </>
                             ) : (
-                                'Save Changes'
+                                t('saveChanges')
                             )}
                         </Button>
                     </div>

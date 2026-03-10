@@ -1,28 +1,46 @@
-import { withAuth } from 'next-auth/middleware'
-import { NextResponse } from 'next/server'
+import { withAuth } from "next-auth/middleware";
+import type { NextRequestWithAuth } from "next-auth/middleware";
+import createMiddleware from "next-intl/middleware";
+import type { NextFetchEvent, NextRequest } from "next/server";
+import { routing } from "./i18n/routing";
 
-export default withAuth(
-    function middleware(req) {
-        const token = req.nextauth.token
-        const pathname = req.nextUrl.pathname
+const intlMiddleware = createMiddleware(routing);
 
-        // If accessing dashboard routes, ensure user has ADMIN role
-        if (pathname.startsWith('/dashboard') && token?.role !== 'ADMIN') {
-            return NextResponse.redirect(new URL('/login', req.url))
-        }
-
-        return NextResponse.next()
+const authMiddleware = withAuth(
+    function middleware(req: NextRequestWithAuth) {
+        return intlMiddleware(req);
     },
     {
         callbacks: {
             authorized: ({ token }) => !!token,
         },
         pages: {
-            signIn: '/login',
+            signIn: "/login",
         },
-    },
-)
+    }
+);
+
+export default function middleware(req: NextRequest, event: NextFetchEvent) {
+    const publicPages = ["/login", "/forgot-password", "/reset-password", "/verify-email"];
+    const { pathname } = req.nextUrl;
+
+    const isPublicPage = publicPages.some(page =>
+        pathname === page ||
+        pathname.startsWith(`/en${page}`) ||
+        pathname.startsWith(`/de${page}`) ||
+        pathname === "/" ||
+        pathname === "/en" ||
+        pathname === "/de"
+    );
+
+    if (isPublicPage) {
+        return intlMiddleware(req);
+    }
+
+    return authMiddleware(req as Parameters<typeof authMiddleware>[0], event);
+}
 
 export const config = {
-    matcher: ['/dashboard/:path*'],
-}
+    // Match only internationalized pathnames
+    matcher: ["/", "/(de|en)/:path*", "/((?!api|_next|_static|_next/static|_next/image|favicon.ico|apple-touch-icon.png|favicon.svg|images/.*|.*\\..*).*)"],
+};

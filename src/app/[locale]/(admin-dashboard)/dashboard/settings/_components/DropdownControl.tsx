@@ -16,6 +16,8 @@ import {
 } from '@/components/ui/dialog'
 import { SystemSettings, TypeItem, MeasureType } from '@/types/settings'
 
+import { useTranslations } from 'next-intl'
+
 interface DropdownControlProps {
     settings: SystemSettings | null
     onUpdate: () => void
@@ -24,6 +26,7 @@ interface DropdownControlProps {
 type TabType = 'role' | 'category' | 'measure'
 
 const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
+    const t = useTranslations('common')
     const { data: session } = useSession()
     const accessToken = session?.user?.accessToken
     const [activeTab, setActiveTab] = useState<TabType>('role')
@@ -189,7 +192,7 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                 >
                     <div className="flex items-center gap-3 text-[22px] font-medium leading-[120%]">
                         <Circle className={`w-3.5 h-3.5 ${activeTab === 'role' ? 'text-primary' : 'text-[#00253E]'}`} fill="currentColor" />
-                        Role Type
+                        {t('roleType')}
                     </div>
                     {activeTab === 'role' ? <ChevronRight className="w-5 h-5 text-primary rotate-180" /> : <ChevronRight className="w-5 h-5 text-[#00253E]" />}
                 </button>
@@ -200,7 +203,7 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                 >
                     <div className="flex items-center gap-3 text-[22px] font-medium leading-[120%]">
                         <Circle className={`w-3.5 h-3.5 ${activeTab === 'category' ? 'text-primary' : 'text-[#00253E]'}`} fill="currentColor" />
-                        Category Type
+                        {t('categoryType')}
                     </div>
                     <ChevronRight className={`w-5 h-5 ${activeTab === 'category' ? 'text-primary' : 'text-[#00253E]'}`} />
                 </button>
@@ -211,7 +214,7 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                 >
                     <div className="flex items-center gap-3 text-[22px] font-medium leading-[120%]">
                         <Circle className={`w-3.5 h-3.5 ${activeTab === 'measure' ? 'text-primary' : 'text-[#00253E]'}`} fill="currentColor" />
-                        Measure Type
+                        {t('measureType')}
                     </div>
                     <ChevronRight className={`w-5 h-5 ${activeTab === 'measure' ? 'text-primary' : 'text-[#00253E]'}`} />
                 </button>
@@ -221,7 +224,7 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
             <div className="space-y-8 bg-white border border-[#E7E7E7] rounded-[8px] p-8 shadow-sm">
                 <h3 className="text-[28px] font-semibold text-[#00253E] leading-[110%] flex items-center gap-3">
                     <Circle className="w-4 h-4 text-[#00253E]" fill="currentColor" />
-                    {activeTab === 'role' ? 'Role Type' : activeTab === 'category' ? 'Category Type' : 'Measure Type'}
+                    {activeTab === 'role' ? t('roleType') : activeTab === 'category' ? t('categoryType') : t('measureType')}
                 </h3>
 
                 <div className="space-y-6">
@@ -254,14 +257,14 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                         ))}
                         {items.length === 0 && (
                             <div className="py-10 text-center text-gray-400 italic text-[20px]">
-                                No items found. Add one below.
+                                {t('noItemsFound')}
                             </div>
                         )}
                     </div>
 
                     <div className="flex gap-4 pt-6">
                         <Input
-                            placeholder={`Type new ${activeTab} type`}
+                            placeholder={`${t('typeNew', { type: t(activeTab).toLowerCase() })}`}
                             value={newValue}
                             onChange={(e) => setNewValue(e.target.value)}
                             className="h-14 border-[#E7E7E7] rounded-[8px] text-[20px] font-normal leading-[110%] text-[#00253E] px-4 placeholder:text-gray-300"
@@ -272,7 +275,7 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                             className="bg-[#BADA55] hover:bg-[#A9C94D] text-[#00253E] font-bold px-10 h-14 rounded-[8px] text-[20px] leading-none"
                         >
                             {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Plus className="w-5 h-5 mr-2" />}
-                            Add
+                            {t('add')}
                         </Button>
                     </div>
                 </div>
@@ -283,12 +286,12 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                 <DialogContent className="max-w-[400px] border-none rounded-[16px] p-6 bg-white">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-bold text-[#00253E] text-center">
-                            Edit {activeTab === 'role' ? 'Role' : activeTab === 'category' ? 'Category' : 'Measure'} Type
+                            {t('editItemTitle', { type: t(activeTab) })}
                         </DialogTitle>
                     </DialogHeader>
                     <div className="py-6">
                         <label className="text-sm font-semibold text-gray-700 mb-1 block capitalize">
-                            {activeTab} Name
+                            {t('itemNameLabel', { type: t(activeTab) })}
                         </label>
                         <Input
                             value={editValue}
@@ -302,14 +305,14 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                             onClick={() => setIsEditModalOpen(false)}
                             className="h-11 px-8 rounded-full border-gray-300 font-semibold flex-1"
                         >
-                            Cancel
+                            {t('cancel')}
                         </Button>
                         <Button
                             onClick={handleEdit}
                             disabled={isSubmitting || !editValue.trim()}
                             className="h-11 px-8 rounded-full bg-primary hover:bg-primary/90 text-[#00253E] font-bold flex-1"
                         >
-                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : 'Save'}
+                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : t('save')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -324,9 +327,9 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                         </div>
 
                         <div className="space-y-2">
-                            <h2 className="text-[24px] font-bold text-[#00253E]">Are you sure?</h2>
+                            <h2 className="text-[24px] font-bold text-[#00253E]">{t('deleteItemTitle')}</h2>
                             <p className="text-gray-500 text-[16px]">
-                                Do you really want to delete this {activeTab} type? This action cannot be undone.
+                                {t('deleteItemSub', { type: t(activeTab).toLowerCase() })}
                             </p>
                         </div>
 
@@ -336,14 +339,14 @@ const DropdownControl = ({ settings, onUpdate }: DropdownControlProps) => {
                                 onClick={() => setIsDeleteModalOpen(false)}
                                 className="h-12 rounded-full border-gray-200 font-semibold text-[#00253E] hover:bg-gray-50 flex-1"
                             >
-                                Cancel
+                                {t('cancel')}
                             </Button>
                             <Button
                                 onClick={confirmDelete}
                                 disabled={isSubmitting}
                                 className="h-12 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold flex-1"
                             >
-                                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Delete Now'}
+                                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t('deleteNow')}
                             </Button>
                         </div>
                     </div>

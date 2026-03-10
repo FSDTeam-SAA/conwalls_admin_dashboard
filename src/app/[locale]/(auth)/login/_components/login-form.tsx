@@ -16,11 +16,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
 import { useState } from 'react'
-import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
+import { Link, useRouter } from '@/i18n/routing'
 
 const formSchema = z.object({
   email: z.string().email({
@@ -32,6 +33,8 @@ const formSchema = z.object({
 })
 
 const LoginForm = () => {
+  const t = useTranslations('common')
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
@@ -64,7 +67,7 @@ const LoginForm = () => {
       }
 
       toast.success('Login successful!')
-      window.location.href = '/dashboard'
+      router.push('/dashboard/trainers')
 
     } catch (error) {
       console.error('Login failed:', error)
@@ -90,10 +93,10 @@ const LoginForm = () => {
         </div>
 
         <h3 className="text-xl md:text-2xl lg:text-[32px] font-semibold text-[#00253E] text-left leading-[120%] ">
-          Sign in to Insight Engine
+          {t('signInTitle')}
         </h3>
         <p className="text-base font-normal text-[#666666] leading-[150%] text-left pt-1">
-          Access your change communication workspace
+          {t('signInSub')}
         </p>
         <Form {...form}>
           <form
@@ -108,7 +111,7 @@ const LoginForm = () => {
                 <FormItem>
                   <FormLabel className="text-lg md:text-xl lg:text-2xl font-medium text-[#001B31]">
                     <Mail className="inline mr-1 -mt-1 w-6 h-6 text-[#00253E]" />{' '}
-                    Email Address
+                    {t('emailLabel')}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -129,7 +132,7 @@ const LoginForm = () => {
                 <FormItem>
                   <FormLabel className="text-lg md:text-xl lg:text-2xl font-medium text-[#001B31] ">
                     <LockKeyhole className="inline mr-1 -mt-1 w-6 h-6 text-[#00253E]" />{' '}
-                    Password
+                    {t('passwordLabel')}
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -163,7 +166,7 @@ const LoginForm = () => {
                 className="text-base font-normal text-primary cursor-pointer leading-[120%] hover:underline"
                 href="/forgot-password"
               >
-                Forgot Password?
+                {t('forgotPassword')}
               </Link>
             </div>
 
@@ -174,7 +177,7 @@ const LoginForm = () => {
                   }`}
                 type="submit"
               >
-                {isLoading ? 'Sign In ...' : 'Sign In'}
+                {isLoading ? t('signingIn') : t('signInButton')}
               </Button>
             </div>
           </form>

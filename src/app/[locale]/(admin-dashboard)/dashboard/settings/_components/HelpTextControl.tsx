@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { SystemSettings, HelpText } from '@/types/settings'
 
+import { useTranslations } from 'next-intl'
+
 interface HelpTextControlProps {
     settings: SystemSettings | null
     onUpdate: () => void
@@ -24,6 +26,7 @@ const HELP_TEXT_CATEGORIES = [
 ]
 
 const HelpTextControl = ({ settings, onUpdate }: HelpTextControlProps) => {
+    const t = useTranslations('common')
     const { data: session } = useSession()
     const accessToken = session?.user?.accessToken
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -89,9 +92,9 @@ const HelpTextControl = ({ settings, onUpdate }: HelpTextControlProps) => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-0">
             <div className="bg-[#00253E] text-white overflow-hidden rounded-t-[8px]">
                 <div className="grid grid-cols-[1fr_200px_1fr] border-b border-gray-700">
-                    <div className="py-3 px-4 text-center font-bold text-sm uppercase">German</div>
-                    <div className="py-3 px-4 text-center font-bold text-sm uppercase">Help Texts</div>
-                    <div className="py-3 px-4 text-center font-bold text-sm uppercase">English</div>
+                    <div className="py-3 px-4 text-center font-bold text-sm uppercase">{t('german')}</div>
+                    <div className="py-3 px-4 text-center font-bold text-sm uppercase">{t('helpTextsHeader')}</div>
+                    <div className="py-3 px-4 text-center font-bold text-sm uppercase">{t('english')}</div>
                 </div>
             </div>
 
@@ -102,7 +105,7 @@ const HelpTextControl = ({ settings, onUpdate }: HelpTextControlProps) => {
                         <div className="bg-[#D0DDE8] p-4 flex flex-col justify-center">
                             <Textarea
                                 {...register(`helpTexts.${index}.values.de`)}
-                                placeholder="German text..."
+                                placeholder={t('germanTextPlaceholder')}
                                 className="flex-1 bg-white border border-[#E2E8F0] focus-visible:ring-0 resize-none text-[20px] font-normal leading-[110%] text-[#00253E] rounded-[4px] p-4"
                             />
                         </div>
@@ -121,7 +124,7 @@ const HelpTextControl = ({ settings, onUpdate }: HelpTextControlProps) => {
                         <div className="bg-[#ECF2CB] p-4 flex flex-col justify-center">
                             <Textarea
                                 {...register(`helpTexts.${index}.values.en`)}
-                                placeholder="English text..."
+                                placeholder={t('englishTextPlaceholder')}
                                 className="flex-1 bg-white border border-[#E2E8F0] focus-visible:ring-0 resize-none text-[20px] font-normal leading-[110%] text-[#00253E] rounded-[4px] p-4"
                             />
                         </div>
@@ -138,10 +141,10 @@ const HelpTextControl = ({ settings, onUpdate }: HelpTextControlProps) => {
                     {isSubmitting ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
+                            {t('saving')}
                         </>
                     ) : (
-                        'Save Changes'
+                        t('saveChanges')
                     )}
                 </Button>
             </div>

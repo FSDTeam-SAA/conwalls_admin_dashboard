@@ -10,9 +10,9 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query'
 import { ChevronRight, Settings as SettingsIcon, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/routing'
 import { toast } from 'sonner'
-
 import {
   Accordion,
   AccordionContent,
@@ -20,7 +20,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
-
 import HelpTextControl from './_components/HelpTextControl'
 import AiPromptControl from './_components/AiPromptControl'
 import DropdownControl from './_components/DropdownControl'
@@ -31,6 +30,7 @@ import SystemSettingsSkeleton from './_components/SystemSettingsSkeleton'
 import { SystemSettingsResponse, SystemSettings } from '@/types/settings'
 
 const SettingsPage = () => {
+  const t = useTranslations('common')
   const { data: session } = useSession()
   const accessToken = session?.user?.accessToken
   const queryClient = useQueryClient()
@@ -59,7 +59,6 @@ const SettingsPage = () => {
   const settings = data?.data?.items?.[0] || null
 
   // If no settings exist, we might need a way to initialize them.
-  // The user mentioned: "first time jhokon kono data thakbe nah, thkon create call hbe"
   const [isInitializing, setIsInitializing] = useState(false)
 
   const handleInitialize = async () => {
@@ -104,7 +103,6 @@ const SettingsPage = () => {
 
   return (
     <div className="w-full max-w-full mx-auto pb-12">
-      {/* Breadcrumb */}
       {/* Breadcrumb & Title */}
       <div className="mb-8">
         <h1
@@ -117,7 +115,7 @@ const SettingsPage = () => {
           }}
           className="mb-3"
         >
-          System Settings
+          {t('systemSettings')}
         </h1>
         <nav className="flex items-center gap-1 text-sm mb-6">
           <Link
@@ -130,7 +128,7 @@ const SettingsPage = () => {
               lineHeight: '120%',
             }}
           >
-            Dashboard
+            {t('dashboard')}
           </Link>
           <ChevronRight className="w-4 h-4 text-[#00253E]" />
           <span
@@ -142,7 +140,7 @@ const SettingsPage = () => {
               lineHeight: '120%',
             }}
           >
-            System Settings
+            {t('systemSettings')}
           </span>
         </nav>
       </div>
@@ -152,11 +150,10 @@ const SettingsPage = () => {
           <SettingsIcon className="w-16 h-16 text-gray-200" />
           <div>
             <h2 className="text-xl font-semibold text-[#00253E]">
-              No Settings Found
+              {t('noSettingsFound')}
             </h2>
             <p className="text-gray-400 mt-1 max-w-sm">
-              It seems you haven&apos;t initialized your system settings yet.
-              Click the button below to get started.
+              {t('noSettingsSub')}
             </p>
           </div>
           <Button
@@ -167,10 +164,10 @@ const SettingsPage = () => {
             {isInitializing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Initializing...
+                {t('initializing')}
               </>
             ) : (
-              'Initialize Settings'
+              t('initializeSettings')
             )}
           </Button>
         </div>
@@ -188,7 +185,7 @@ const SettingsPage = () => {
             >
               <AccordionTrigger className="hover:no-underline py-4">
                 <span className="text-[22px] font-medium leading-[120%] text-[#00253E]">
-                  Help text control
+                  {t('helpTextControl')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pt-2 pb-6">
@@ -210,7 +207,7 @@ const SettingsPage = () => {
             >
               <AccordionTrigger className="hover:no-underline py-4">
                 <span className="text-[22px] font-medium leading-[120%] text-[#00253E]">
-                  AI Prompt Control
+                  {t('aiPromptControl')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pt-2 pb-6">
@@ -232,7 +229,7 @@ const SettingsPage = () => {
             >
               <AccordionTrigger className="hover:no-underline py-4">
                 <span className="text-[22px] font-medium leading-[120%] text-[#00253E]">
-                  Dropdown Control
+                  {t('dropdownControl')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pt-2 pb-6">
@@ -254,7 +251,7 @@ const SettingsPage = () => {
             >
               <AccordionTrigger className="hover:no-underline py-4">
                 <span className="text-[22px] font-medium leading-[120%] text-[#00253E]">
-                  Reset Password
+                  {t('resetPassword')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pt-2 pb-6">

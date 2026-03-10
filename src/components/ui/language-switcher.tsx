@@ -1,8 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useEffect, useState } from 'react'
-import { parseCookies, setCookie } from 'nookies'
+import { useLocale } from 'next-intl'
 import {
     Select,
     SelectContent,
@@ -10,60 +9,29 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-
-type GoogleTranslationConfig = {
-    defaultLanguage: string
-    languages: { name: string; title: string; icon?: string }[]
-}
-
-declare global {
-    interface Window {
-        __GOOGLE_TRANSLATION_CONFIG__?: GoogleTranslationConfig
-    }
-}
-
-const COOKIE_NAME = 'googtrans'
+import { useRouter, usePathname } from '@/i18n/routing'
 
 const LanguageSwitcher = () => {
-    const [currentLang, setCurrentLang] = useState('en')
-    const [config, setConfig] = useState<GoogleTranslationConfig | null>(null)
+    const locale = useLocale()
+    const router = useRouter()
+    const pathname = usePathname()
 
-    useEffect(() => {
-        const handleConfig = () => {
-            const translationConfig = window.__GOOGLE_TRANSLATION_CONFIG__
-            if (!translationConfig) return
+    const languages = [
+        { title: 'English', name: 'en' },
+        { title: 'Deutsch', name: 'de' },
+    ]
 
-            setConfig(translationConfig)
-            const cookie = parseCookies()[COOKIE_NAME]
-            const lang = cookie?.split('/')?.[2] || translationConfig.defaultLanguage
-            setCurrentLang(lang)
-        }
-
-        if (window.__GOOGLE_TRANSLATION_CONFIG__) {
-            handleConfig()
-        }
-
-        window.addEventListener('translationConfigReady', handleConfig)
-
-        return () => {
-            window.removeEventListener('translationConfigReady', handleConfig)
-        }
-    }, [])
-
-    const switchLang = (lang: string) => {
-        setCookie(undefined, COOKIE_NAME, `/auto/${lang}`, { path: '/' })
-        window.location.reload()
+    const switchLang = (nextLocale: string) => {
+        router.replace(pathname, { locale: nextLocale })
     }
 
-    if (!config) return null
-
     return (
-        <Select value={currentLang} onValueChange={switchLang}>
+        <Select value={locale} onValueChange={switchLang}>
             <SelectTrigger className="w-[140px] bg-white text-[#00253E] border-none rounded-full h-10 px-4 font-semibold focus:ring-0">
                 <SelectValue placeholder="Language" />
             </SelectTrigger>
             <SelectContent className="bg-white border-none shadow-lg rounded-[12px]">
-                {config.languages.map((lang) => (
+                {languages.map((lang) => (
                     <SelectItem
                         key={lang.name}
                         value={lang.name}
