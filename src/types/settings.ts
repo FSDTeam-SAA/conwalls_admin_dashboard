@@ -11,12 +11,18 @@ export interface HelpText {
 export interface TypeItem {
     _id?: string
     name: string
+    labels?: LanguageValues
 }
 
 export interface MeasureType {
     _id?: string
     name: string
+    labels?: LanguageValues
     values: LanguageValues
+}
+
+export interface CategoryType extends TypeItem {
+    measureTypes: MeasureType[]
 }
 
 export interface SystemSettings {
@@ -24,7 +30,7 @@ export interface SystemSettings {
     helpTexts: HelpText[]
     stakeholderHelpTexts: HelpText[]
     roleTypes: TypeItem[]
-    categoryTypes: TypeItem[]
+    categoryTypes: CategoryType[]
     measureTypes: MeasureType[]
     triggerAiPrompt: MeasureType[]
     createdAt?: string

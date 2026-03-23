@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { SystemSettings, MeasureType } from '@/types/settings'
+import { SystemSettings, MeasureType, CategoryType } from '@/types/settings'
 
 import { useTranslations } from 'next-intl'
 
@@ -17,14 +17,32 @@ interface AiPromptControlProps {
   onUpdate: () => void
 }
 
+type MeasurePromptRow = MeasureType & {
+  categoryIndex: number
+  measureIndex: number
+  categoryName: string
+}
+
 const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
   const t = useTranslations('common')
   const { data: session } = useSession()
   const accessToken = session?.user?.accessToken
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const flattenCategoryMeasureTypes = (
+    categories: CategoryType[] = [],
+  ): MeasurePromptRow[] =>
+    categories.flatMap((category, categoryIndex) =>
+      (category.measureTypes || []).map((measureType, measureIndex) => ({
+        ...measureType,
+        categoryIndex,
+        measureIndex,
+        categoryName: category.labels?.en || category.name,
+      })),
+    )
+
   const { register, control, handleSubmit, reset } = useForm<{
-    measureTypes: MeasureType[]
+    measureTypes: MeasurePromptRow[]
   }>({
     defaultValues: {
       measureTypes: [],
@@ -38,16 +56,38 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
 
   // Sync with settings data when it loads
   useEffect(() => {
-    if (settings && settings.measureTypes) {
-      reset({ measureTypes: settings.measureTypes })
+    if (settings?.categoryTypes) {
+      reset({ measureTypes: flattenCategoryMeasureTypes(settings.categoryTypes) })
     }
   }, [settings, reset])
 
-  const onSubmit = async (values: { measureTypes: MeasureType[] }) => {
+  const onSubmit = async (values: { measureTypes: MeasurePromptRow[] }) => {
     if (!settings?._id) return
 
     try {
       setIsSubmitting(true)
+      const updatedCategoryTypes = (settings.categoryTypes || []).map(
+        (category, categoryIndex) => ({
+          ...category,
+          measureTypes: (category.measureTypes || []).map(
+            (measureType, measureIndex) => {
+              const updatedMeasure = values.measureTypes.find(
+                (item) =>
+                  item.categoryIndex === categoryIndex &&
+                  item.measureIndex === measureIndex,
+              )
+
+              return updatedMeasure
+                ? {
+                    ...measureType,
+                    values: updatedMeasure.values,
+                  }
+                : measureType
+            },
+          ),
+        }),
+      )
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/system-setting/${settings._id}`,
         {
@@ -57,7 +97,7 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            measureTypes: values.measureTypes,
+            categoryTypes: updatedCategoryTypes,
           }),
         },
       )
@@ -123,7 +163,9 @@ const AiPromptControl = ({ settings, onUpdate }: AiPromptControlProps) => {
                 <span className="text-[18px] font-semibold text-[#00253E] leading-[110%]">
                   {field.name}
                 </span>
-
+                <span className="block text-[11px] mt-1 uppercase tracking-wide text-[#00253E]/60">
+                  {field.categoryName}
+                </span>
               </div>
             </div>
 
