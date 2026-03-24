@@ -75,7 +75,16 @@ const SettingsPage = () => {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            roleTypes: [{ name: 'Opinion Leader' }, { name: 'Supporter' }],
+            roleTypes: [
+              {
+                name: 'Opinion Leader',
+                labels: { de: 'Meinungsfuehrer', en: 'Opinion Leader' },
+              },
+              {
+                name: 'Supporter',
+                labels: { de: 'Unterstuetzer', en: 'Supporter' },
+              },
+            ],
             helpTexts: [{ name: 'Relevance', values: { de: '', en: '' } }],
             stakeholderHelpTexts: [
               { name: 'Pain point', values: { de: '', en: '' } },
@@ -85,10 +94,20 @@ const SettingsPage = () => {
               { name: 'Objection Handling', values: { de: '', en: '' } },
               { name: 'Call to Action', values: { de: '', en: '' } },
             ],
-            categoryTypes: [{ name: 'Communication' }],
-            measureTypes: [
-              { name: 'Presentation', values: { de: '', en: '' } },
+            categoryTypes: [
+              {
+                name: 'Communication',
+                labels: { de: 'Kommunikation', en: 'Communication' },
+                measureTypes: [
+                  {
+                    name: 'Presentation',
+                    labels: { de: 'Praesentation', en: 'Presentation' },
+                    values: { de: '', en: '' },
+                  },
+                ],
+              },
             ],
+            measureTypes: [],
           }),
         },
       )
